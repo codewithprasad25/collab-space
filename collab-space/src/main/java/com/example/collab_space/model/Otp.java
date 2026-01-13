@@ -25,10 +25,10 @@ public class Otp {
     User user;
 
     @CreationTimestamp
-    LocalTime creationTime;
+    LocalDateTime creationTime;
 
     @Column(nullable = false)
-    LocalTime expiryTime;
+    LocalDateTime expiryTime;
 
 
 }

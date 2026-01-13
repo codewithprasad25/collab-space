@@ -10,8 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.Random;
 
 @Service
 public class UserService {
@@ -29,23 +27,31 @@ public class UserService {
     MailService mailService;
 
     public void userRegistration(UserRegistrationDto registrationDto){
-        User user = new User();   //user is primary key here
-        user.setActive(false);
-        user.setName(registrationDto.getName());
-        user.setEmail(registrationDto.getEmail());
-        user.setPassword(registrationDto.getPassword());
+        User user1 = userRepository.findByEmail(registrationDto.getEmail());
 
-        userRepository.save(user);
+        if(user1 != null && user1.isActive()){ //if user is preasent and is active so then throw runtime exception;
+           throw new RuntimeException("User With this email already exists");
+        }
 
-        Otp otp = new Otp();
-        otp.setUser(user);   //user will foreign key on otp table
-        otp.setCreationTime(LocalTime.now());
-        otp.setExpiryTime(LocalTime.now().plusMinutes(5));
-        otp.setOtp(otpService.createOtp());   //new otp generated randomly and its value set in bet origin and bound
+        Otp otp = null;
 
-        otpRepository.save(otp);
+        if(user1!=null && !user1.isActive()){   //if user is preasent but not active means didnt do verification otp so its below method will run
+            otp =  otpService.generateOtp(user1);
+            otpRepository.save(otp);
+            mailService.registrationOtp(user1.getEmail(),otp.getOtp());
+        }
 
-        mailService.registrationOtp(user.getEmail(),otp.getOtp());
+        else { //else create new user and set him inactive save in userepo generate otp and save that otp in DB and send it via email.
+            User user = new User();   //user is primary key here
+            user.setActive(false);
+            user.setName(registrationDto.getName());
+            user.setEmail(registrationDto.getEmail());
+            user.setPassword(registrationDto.getPassword());
+            userRepository.save(user);
+            otp = otpService.generateOtp(user);
+            otpRepository.save(otp);
+            mailService.registrationOtp(user.getEmail(),otp.getOtp());
+        }
     }
 
     public void userLogin(UserLoginDto loginDto){
