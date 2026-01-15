@@ -9,8 +9,6 @@ import com.example.collab_space.requestDto.UserRegistrationDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-
 @Service
 public class UserService {
 
@@ -30,7 +28,7 @@ public class UserService {
         User user1 = userRepository.findByEmail(registrationDto.getEmail());
 
         if(user1 != null && user1.isActive()){ //if user is preasent and is active so then throw runtime exception;
-           throw new RuntimeException("User With this email already exists");
+            throw new RuntimeException("User With this email already exists");
         }
 
         Otp otp = null;
@@ -54,21 +52,35 @@ public class UserService {
         }
     }
 
+
     public void userLogin(UserLoginDto loginDto){
+
+        if(loginDto == null){
+            throw new RuntimeException("Login data missing");
+        }
+
+        if(loginDto.getEmail() == null || loginDto.getEmail().trim().isEmpty()){
+            throw new RuntimeException("Email is required");
+        }
+
+        if(loginDto.getPassword() == null || loginDto.getPassword().trim().isEmpty()){
+            throw new RuntimeException("Password is required");
+        }
+
         User user = userRepository.findByEmail(loginDto.getEmail());
 
         if(user == null){
-            System.out.println("User not found");
-            return;
+            throw new RuntimeException("User not found");
         }
 
         if(!user.getPassword().equals(loginDto.getPassword())){
-            System.out.println("Wrong password");
-            return;
+            throw new RuntimeException("Wrong password");
         }
 
-        System.out.println("Login successful");
+        if(!user.isActive()){
+            throw new RuntimeException("User not verified");
+        }
 
-
+        // success → return silently
     }
 }

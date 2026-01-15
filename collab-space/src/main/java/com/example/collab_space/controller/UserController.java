@@ -6,10 +6,9 @@ import com.example.collab_space.requestDto.UserRegistrationDto;
 import com.example.collab_space.service.OtpService;
 import com.example.collab_space.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class UserController {
@@ -26,12 +25,23 @@ public class UserController {
     }
 
     @PutMapping("/otp/verify")
-    public void otpVerification(@RequestBody OtpVerificationDto verificationDto) {
-        otpService.verify(verificationDto);
+    public ResponseEntity<String> otpVerification(@RequestBody OtpVerificationDto verificationDto) {
+        try {
+            if(otpService.verify(verificationDto))
+                return new ResponseEntity<>("Otp is Verified", HttpStatus.OK);
+        }catch(RuntimeException e){
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_ACCEPTABLE);
+        }
+        return null;
     }
 
     @PostMapping("/login")
-    public void userLogin(@RequestBody UserLoginDto loginDto){
-        userService.userLogin(loginDto);
+    public ResponseEntity<String> userLogin(@RequestBody UserLoginDto loginDto){
+        try {
+            userService.userLogin(loginDto);
+            return new ResponseEntity<>("Login successful", HttpStatus.OK);
+        } catch (RuntimeException e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 }

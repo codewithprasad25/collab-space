@@ -43,7 +43,15 @@ public class OtpService {
 
         Otp otp = otpRepository.findByUser(user);
         if(otp.getOtp() == otpVerificationDto.getOtp()){
-            if()
+            if(LocalDateTime.now().isAfter(otp.getExpiryTime())){
+                throw new RuntimeException("Otp is expired");
+            }
+            else{
+                user.setActive(true);
+                userRepository.save(user);
+                return true;
+            }
         }
+        return false;
     }
 }
