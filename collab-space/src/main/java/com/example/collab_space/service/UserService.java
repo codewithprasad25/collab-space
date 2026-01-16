@@ -9,6 +9,8 @@ import com.example.collab_space.requestDto.UserRegistrationDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 @Service
 public class UserService {
 
@@ -34,7 +36,10 @@ public class UserService {
         Otp otp = null;
 
         if(user1!=null && !user1.isActive()){   //if user is preasent but not active means didnt do verification otp so its below method will run
-            otp =  otpService.generateOtp(user1);
+            otp =  otpRepository.findByUser(user1);
+            otp.setOtp(otpService.createOtp());
+            otp.setCreationTime(LocalDateTime.now());
+            otp.setExpiryTime(LocalDateTime.now().plusMinutes(5));
             otpRepository.save(otp);
             mailService.registrationOtp(user1.getEmail(),otp.getOtp());
         }
