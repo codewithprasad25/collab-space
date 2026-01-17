@@ -1,0 +1,85 @@
+/* ===== Slack-style Auth Screens ===== */
+
+.auth-container {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.auth-card {
+    background: #fff;
+    width: 380px;
+    padding: 32px;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.auth-card h1 {
+    margin-bottom: 20px;
+    font-size: 22px;
+}
+
+.auth-card input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 14px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.auth-card button {
+    width: 100%;
+    padding: 12px;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.auth-card button:hover {
+    opacity: 0.9;
+}
+
+.auth-footer {
+    margin-top: 16px;
+    text-align: center;
+    font-size: 14px;
+}
+
+.auth-footer a {
+    color: var(--primary);
+    text-decoration: none;
+}
+
+
+/* Login Tabs */
+
+.login-tabs {
+    display: flex;
+    margin-bottom: 16px;
+}
+
+.login-tabs button {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    background: #eee;
+    cursor: pointer;
+}
+
+.login-tabs button.active {
+    background: var(--primary);
+    color: white;
+}
+
+.login-form {
+    display: none;
+}
+
+.login-form.active {
+    display: block;
+}

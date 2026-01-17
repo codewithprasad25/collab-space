@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Login | Collab Space</title>
+    <link rel="stylesheet" href="css/global.css">
+</head>
+
+<body>
+
+    <div class="auth-container">
+        <div class="auth-card">
+            <h2>Sign in to Collab Space</h2>
+
+            <div class="tabs">
+                <button class="tab active" data-tab="password">Password</button>
+                <button class="tab" data-tab="otp">OTP</button>
+            </div>
+
+            <form id="loginPassword" class="form active">
+                <input type="email" placeholder="Email" required>
+                <input type="password" placeholder="Password" required>
+                <button>Login</button>
+            </form>
+
+            <form id="loginOtp" class="form">
+                <input type="email" placeholder="Email" required>
+                <button>Send OTP</button>
+            </form>
+
+            <p>New user? <a href="register.html">Register</a></p>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+</body>
+
+</html>

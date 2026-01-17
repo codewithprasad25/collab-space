@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Collab Space</title>
+    <link rel="stylesheet" href="app.css">
+</head>
+
+<body>
+
+    <div class="workspace">
+
+        <aside class="workspace-rail">
+            <div class="icon">C</div>
+            <div class="icon">T</div>
+            <div class="icon add">+</div>
+        </aside>
+
+        <aside class="sidebar">
+            <h3>Collab Space</h3>
+
+            <p class="section-title">Channels</p>
+            <ul>
+                <li class="active"># general</li>
+                <li># backend</li>
+                <li># frontend</li>
+            </ul>
+
+            <p class="section-title">Direct Messages</p>
+            <ul>
+                <li>Admin</li>
+                <li>Prasad</li>
+            </ul>
+        </aside>
+
+        <main class="chat">
+            <header># general</header>
+
+            <div class="messages" id="messages">
+                <p><b>Admin:</b> Welcome 👋</p>
+            </div>
+
+            <div class="input-box">
+                <input id="msgInput" placeholder="Type message...">
+                <button onclick="sendMessage()">Send</button>
+            </div>
+        </main>
+
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+
+</html>
