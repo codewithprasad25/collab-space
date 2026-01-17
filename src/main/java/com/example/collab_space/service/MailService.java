@@ -11,7 +11,7 @@ public class MailService {
     @Autowired
     JavaMailSender mailSender;
 
-    public void registrationOtp(String email, Integer otp){   //this method will take email and send otp on that email
+    public void sendOtp(String email, Integer otp){   //this method will take email and send otp on that email
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setTo(email);
         mailMessage.setSubject("Otp Verification");

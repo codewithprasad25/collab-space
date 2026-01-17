@@ -1,4 +1,4 @@
-package com.example.collab_space.Enums;
+package com.example.collab_space.enums;
 
 
 public enum Role {

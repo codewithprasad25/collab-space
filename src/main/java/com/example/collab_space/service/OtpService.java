@@ -54,4 +54,13 @@ public class OtpService {
         }
         return false;
     }
+
+    public Otp renewOtp(User user){
+        Otp otp =  otpRepository.findByUser(user);
+        otp.setOtp(createOtp());
+        otp.setCreationTime(LocalDateTime.now());
+        otp.setExpiryTime(LocalDateTime.now().plusMinutes(5));
+        otpRepository.save(otp);
+        return otp;
+    }
 }

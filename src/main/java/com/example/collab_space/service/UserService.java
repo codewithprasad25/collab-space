@@ -9,7 +9,6 @@ import com.example.collab_space.requestDto.UserRegistrationDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 
 @Service
 public class UserService {
@@ -35,16 +34,12 @@ public class UserService {
 
         Otp otp = null;
 
-        if(user1!=null && !user1.isActive()){   //if user is preasent but not active means didnt do verification otp so its below method will run
-            otp =  otpRepository.findByUser(user1);
-            otp.setOtp(otpService.createOtp());
-            otp.setCreationTime(LocalDateTime.now());
-            otp.setExpiryTime(LocalDateTime.now().plusMinutes(5));
-            otpRepository.save(otp);
-            mailService.registrationOtp(user1.getEmail(),otp.getOtp());
+        if(user1!=null && !user1.isActive()){   //if user is present but not active means didnt do verification otp so its below method will run
+            otp = otpService.renewOtp(user1);
+            mailService.sendOtp(user1.getEmail(),otp.getOtp());
         }
 
-        else { //else create new user and set him inactive save in userepo generate otp and save that otp in DB and send it via email.
+        else { //else create new user and set him inactive save in user repository generate otp and save that otp in DB and send it via email.
             User user = new User();   //user is primary key here
             user.setActive(false);
             user.setName(registrationDto.getName());
@@ -53,23 +48,23 @@ public class UserService {
             userRepository.save(user);
             otp = otpService.generateOtp(user);
             otpRepository.save(otp);
-            mailService.registrationOtp(user.getEmail(),otp.getOtp());
+            mailService.sendOtp(user.getEmail(),otp.getOtp());
         }
     }
 
 
-    public void userLogin(UserLoginDto loginDto){
+    public void userLoginWithEmailAndPass(UserLoginDto loginDto){
 
         if(loginDto == null){
             throw new RuntimeException("Login data missing");
         }
 
         if(loginDto.getEmail() == null || loginDto.getEmail().trim().isEmpty()){
-            throw new RuntimeException("Email is required");
+            throw new RuntimeException("credentials are required");
         }
 
         if(loginDto.getPassword() == null || loginDto.getPassword().trim().isEmpty()){
-            throw new RuntimeException("Password is required");
+            throw new RuntimeException("credentials are required");
         }
 
         User user = userRepository.findByEmail(loginDto.getEmail());
@@ -79,13 +74,28 @@ public class UserService {
         }
 
         if(!user.getPassword().equals(loginDto.getPassword())){
-            throw new RuntimeException("Wrong password");
+            throw new RuntimeException("Invalid Credentials");
         }
 
         if(!user.isActive()){
-            throw new RuntimeException("User not verified");
+            throw new RuntimeException("User not verified, please register yourself again");
         }
 
         // success → return silently
+    }
+
+
+    public void userLoginWithOtp(String email) {
+        User user = userRepository.findByEmail(email);
+
+        if(user == null){
+            throw new RuntimeException("User not found");
+        }
+
+        if(!user.isActive()){
+            throw new RuntimeException("User not verified, please register yourself again");
+        }
+        Otp otp = otpService.renewOtp(user);
+        mailService.sendOtp(email,otp.getOtp());
     }
 }

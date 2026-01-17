@@ -27,21 +27,36 @@ public class UserController {
     @PutMapping("/otp/verify")
     public ResponseEntity<String> otpVerification(@RequestBody OtpVerificationDto verificationDto) {
         try {
-            if(otpService.verify(verificationDto))
+            if (otpService.verify(verificationDto)) {
                 return new ResponseEntity<>("Otp is Verified", HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>("Invalid Otp",HttpStatus.BAD_REQUEST);
+            }
         }catch(RuntimeException e){
             return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_ACCEPTABLE);
         }
-        return null;
     }
 
     @PostMapping("/login")
     public ResponseEntity<String> userLogin(@RequestBody UserLoginDto loginDto){
         try {
-            userService.userLogin(loginDto);
+            userService.userLoginWithEmailAndPass(loginDto);
             return new ResponseEntity<>("Login successful", HttpStatus.OK);
         } catch (RuntimeException e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
+
     }
+
+    @PostMapping("/login/{email}")
+    public ResponseEntity<String> userLoginWithOtp(@PathVariable String email){
+        try{
+            userService.userLoginWithOtp(email);
+            return new ResponseEntity<>("Otp is send to your email",HttpStatus.OK);
+        }catch (RuntimeException e){
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
+        }
+
+    }
+
 }

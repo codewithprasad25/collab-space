@@ -1,6 +1,6 @@
 package com.example.collab_space.model;
 
-import com.example.collab_space.Enums.Role;
+import com.example.collab_space.enums.Role;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
