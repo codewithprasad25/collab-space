@@ -3,53 +3,68 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Collab Space</title>
-    <link rel="stylesheet" href="app.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Collab-Space - Workspace</title>
+    <link rel="stylesheet" href="../css/css/global.css">
+    <link rel="stylesheet" href="../css/css/app.css">
 </head>
 
 <body>
 
-    <div class="workspace">
+    <div class="app-layout">
+        <nav class="workspace-rail">
+            <div class="rail-item active">C</div>
+            <div class="rail-item add-workspace" title="Add Workspace">+</div>
+        </nav>
 
-        <aside class="workspace-rail">
-            <div class="icon">C</div>
-            <div class="icon">T</div>
-            <div class="icon add">+</div>
-        </aside>
-
-        <aside class="sidebar">
-            <h3>Collab Space</h3>
-
-            <p class="section-title">Channels</p>
-            <ul>
-                <li class="active"># general</li>
-                <li># backend</li>
-                <li># frontend</li>
-            </ul>
-
-            <p class="section-title">Direct Messages</p>
-            <ul>
-                <li>Admin</li>
-                <li>Prasad</li>
-            </ul>
-        </aside>
-
-        <main class="chat">
-            <header># general</header>
-
-            <div class="messages" id="messages">
-                <p><b>Admin:</b> Welcome 👋</p>
+        <aside class="channel-sidebar">
+            <div class="workspace-header">
+                <div class="workspace-title">Collab-Space</div>
+                <button class="workspace-dropdown">▼</button>
             </div>
 
-            <div class="input-box">
-                <input id="msgInput" placeholder="Type message...">
-                <button onclick="sendMessage()">Send</button>
+            <div class="sidebar-section">
+                <div class="section-header">
+                    <span>Channels</span>
+                    <button class="section-toggle">+</button>
+                </div>
+                <ul class="channel-list">
+                    <li class="channel-item active"># general</li>
+                    <li class="channel-item"># random</li>
+                </ul>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="section-header">
+                    <span>Direct Messages</span>
+                </div>
+                <ul class="dm-list">
+                    <li class="dm-item">@ John Doe</li>
+                    <li class="dm-item">@ Jane Smith</li>
+                </ul>
+            </div>
+
+            <button class="invite-btn">Invite People</button>
+        </aside>
+
+        <main class="chat-area">
+            <header class="chat-header">
+                <div class="chat-header-content">
+                    <span class="channel-name"># general</span>
+                    <span class="channel-info">Channel description and info</span>
+                </div>
+            </header>
+            <div class="chat-messages" id="messages">
+                <div class="welcome-message">Welcome to # general</div>
+            </div>
+            <div class="chat-input">
+                <input type="text" id="msgInput" placeholder="Message # general" />
+                <button id="sendBtn">Send</button>
             </div>
         </main>
-
     </div>
 
-    <script src="js/app.js"></script>
+    <script src="../javascript/app.js"></script>
 </body>
 
 </html>
