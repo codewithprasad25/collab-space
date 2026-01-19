@@ -53,7 +53,7 @@ public class UserService {
     }
 
 
-    public void userLoginWithEmailAndPass(UserLoginDto loginDto){
+    public boolean LoginWithEmailAndPass(UserLoginDto loginDto){
 
         if(loginDto == null){
             throw new RuntimeException("Login data missing");
@@ -82,10 +82,11 @@ public class UserService {
         }
 
         // success → return silently
+        return false;
     }
 
 
-    public void userLoginWithOtp(String email) {
+    public void LoginWithOtp(String email) {
         User user = userRepository.findByEmail(email);
 
         if(user == null){

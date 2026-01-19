@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin("*")
 @RestController
 public class UserController {
 
@@ -19,9 +20,14 @@ public class UserController {
     @Autowired
     OtpService otpService;
 
-    @PostMapping("/register")
-    public void userRegistration(@RequestBody UserRegistrationDto registrationDto){
-        userService.userRegistration(registrationDto);
+    @PostMapping("/registration")
+    public ResponseEntity userRegistration(@RequestBody UserRegistrationDto registrationDto){
+        try {
+            userService.userRegistration(registrationDto);
+            return new ResponseEntity<>("registration successful",HttpStatus.OK);
+        }catch(RuntimeException e){
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PutMapping("/otp/verify")
@@ -38,20 +44,22 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> userLogin(@RequestBody UserLoginDto loginDto){
+    public ResponseEntity userLogin(@RequestBody UserLoginDto loginDto){
         try {
-            userService.userLoginWithEmailAndPass(loginDto);
-            return new ResponseEntity<>("Login successful", HttpStatus.OK);
+            if (userService.LoginWithEmailAndPass(loginDto)){
+                return new ResponseEntity<>("Login successful", HttpStatus.OK);
+            }
+
         } catch (RuntimeException e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
-
+        return null;
     }
 
     @PostMapping("/login/{email}")
-    public ResponseEntity<String> userLoginWithOtp(@PathVariable String email){
+    public ResponseEntity userLoginWithOtp(@PathVariable String email){
         try{
-            userService.userLoginWithOtp(email);
+            userService.LoginWithOtp(email);
             return new ResponseEntity<>("Otp is send to your email",HttpStatus.OK);
         }catch (RuntimeException e){
             return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);

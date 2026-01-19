@@ -21,6 +21,7 @@ public class OtpService {
     OtpRepository otpRepository;
 
     public Integer createOtp(){
+
         return new Random().nextInt(100000,999999);
     }
 
