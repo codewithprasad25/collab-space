@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Collab-Space | General</title>
+
+    <script>
+        const user = localStorage.getItem('isLoggedIn');
+        if (!user) {
+            window.location.href = 'login.html';
+        }
+    </script>
+
+    <link rel="stylesheet" href="css/css/global.css" />
+    <link rel="stylesheet" href="css/css/app.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+
+<body>
+    <div class="app-layout">
+        <nav class="workspace-rail">
+            <div class="rail-item active">
+                <span class="ws-initials">CS</span>
+            </div>
+            <div class="rail-item">
+                <span class="ws-initials">P2</span>
+            </div>
+            <div class="rail-item add-ws">
+                <i class="fa-solid fa-plus"></i>
+            </div>
+        </nav>
+
+        <aside class="channel-sidebar">
+            <div class="sidebar-header">
+                <h2 class="workspace-name">
+                    Collab-Space <i class="fa-solid fa-chevron-down"></i>
+                </h2>
+                <button class="edit-btn">
+            <i class="fa-regular fa-pen-to-square"></i>
+          </button>
+            </div>
+
+            <div class="sidebar-scroll-area">
+                <div class="sidebar-section">
+                    <div class="section-header">
+                        <span><i class="fa-solid fa-caret-down"></i> Channels</span>
+                        <i class="fa-solid fa-plus add-channel-icon"></i>
+                    </div>
+                    <ul class="channel-list" id="channelList">
+                        <li class="channel-item active" data-id="general">
+                            <span class="channel-hash">#</span> general
+                        </li>
+                        <li class="channel-item" data-id="random">
+                            <span class="channel-hash">#</span> random
+                        </li>
+                        <li class="channel-item" data-id="engineering">
+                            <span class="channel-hash">#</span> engineering
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="sidebar-section">
+                    <div class="section-header">
+                        <span><i class="fa-solid fa-caret-right"></i> Direct Messages</span
+              >
+              <i class="fa-solid fa-plus add-channel-icon"></i>
+            </div>
+            <ul class="dm-list">
+              <li class="channel-item user-status online">
+                <i class="fa-solid fa-circle"></i> Prasad Shinde
+                <span class="you-badge">(you)</span>
+                        </li>
+                        <li class="channel-item user-status offline">
+                            <i class="fa-regular fa-circle"></i> Sarah Engineer
+                        </li>
+                        </ul>
+                    </div>
+                </div>
+        </aside>
+
+        <main class="chat-area">
+            <header class="chat-header">
+                <div class="header-left">
+                    <h3># general</h3>
+                    <p class="topic">
+                        Company-wide announcements and work-based matters
+                    </p>
+                </div>
+                <div class="header-right">
+                    <div class="avatar-stack">
+                        <div class="avatar-circle" style="background: purple">A</div>
+                        <div class="avatar-circle" style="background: blue">S</div>
+                    </div>
+                    <span class="member-count">24</span>
+                </div>
+            </header>
+
+            <div class="message-feed" id="messageFeed">
+                <div class="message-group">
+                    <div class="msg-avatar">S</div>
+                    <div class="msg-content">
+                        <div class="msg-meta">
+                            <span class="msg-sender">System</span>
+                            <span class="msg-time">Today at 9:00 AM</span>
+                        </div>
+                        <div class="msg-text">
+                            Welcome to the <strong>#general</strong> channel! This is the start of the Collab-Space history.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chat-input-container">
+                <div class="input-wrapper">
+                    <div class="input-toolbar">
+                        <i class="fa-solid fa-bold"></i>
+                        <i class="fa-solid fa-italic"></i>
+                        <i class="fa-solid fa-strikethrough"></i>
+                    </div>
+                    <textarea placeholder="Message #general"></textarea>
+                    <div class="input-footer">
+                        <div class="footer-tools">
+                            <i class="fa-solid fa-plus"></i>
+                            <i class="fa-solid fa-video"></i>
+                            <i class="fa-solid fa-microphone"></i>
+                        </div>
+                        <button class="send-btn">
+                <i class="fa-solid fa-paper-plane"></i>
+              </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+        </div>
+
+        <div id="channelModal" class="modal-overlay hidden">
+            <div class="modal-container">
+                <div class="modal-header">
+                    <h2>Create a channel</h2>
+                    <button class="close-modal-btn">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <p class="modal-desc">
+                        Channels are where your team communicates. They're best when organized around a topic — #marketing, for example.
+                    </p>
+
+                    <form id="createChannelForm">
+                        <div class="form-group">
+                            <label for="newChannelName">Name</label>
+                            <div class="input-prefix-wrapper">
+                                <span class="prefix" id="modalPrefixDisplay">#</span>
+                                <input type="text" id="newChannelName" placeholder="e.g. plan-budget" autocomplete="off" required />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Visibility</label>
+                            <div class="radio-group">
+                                <label class="radio-card selected">
+                  <input
+                    type="radio"
+                    name="channelVisibility"
+                    value="public"
+                    checked
+                  />
+                  <div class="radio-info">
+                    <span class="radio-title"
+                      ><i class="fa-solid fa-hashtag"></i> Public</span
+                    >
+                    <span class="radio-desc"
+                      >Anyone in the workspace can view and join.</span
+                    >
+                  </div>
+                </label>
+                                <label class="radio-card">
+                  <input
+                    type="radio"
+                    name="channelVisibility"
+                    value="private"
+                  />
+                  <div class="radio-info">
+                    <span class="radio-title"
+                      ><i class="fa-solid fa-lock"></i> Private</span
+                    >
+                    <span class="radio-desc"
+                      >Can only be viewed or joined by invitation.</span
+                    >
+                  </div>
+                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="newChannelDesc">Description (optional)</label>
+                            <input type="text" id="newChannelDesc" class="form-input" placeholder="What's this channel about?" />
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn-secondary close-modal-btn">
+                Cancel
+              </button>
+                            <button type="submit" class="btn-primary">Create</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <script src="js/app.js"></script>
+</body>
+
+</html>

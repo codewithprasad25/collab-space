@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script>
+        const token = new URLSearchParams(window.location.search).get("token");
+        const data = null;
+        async function fetchInvitedEmail() {
+            try {
+                const res = await fetch(`http://localhost:8080/fetch/invited/email/${token}`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                });
+                const data = await res.text();
+                if (!res.ok) alert(data);
+                else {
+                    document.getElementById("email").value = data;
+                }
+            } catch {
+                alert("Failed to fetch invited email");
+            }
+        }
+        fetchInvitedEmail();
+    </script>
+    <meta charset="UTF-8">
+    <title>Create Account</title>
+
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        
+        .card {
+            background: #fff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            width: 360px;
+        }
+        
+        .title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        
+        .sub {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 20px;
+        }
+        
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 12px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            font-size: 14px;
+        }
+        
+        input[readonly] {
+            background: #f3f3f3;
+        }
+        
+        button {
+            width: 100%;
+            background: #4f46e5;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        .error {
+            color: #b91c1c;
+            font-size: 13px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="card" id="card">
+        <div class="title">Create your account</div>
+
+        <input type="text" id="name" placeholder="Full Name" />
+        <input type="email" id="email" placeholder="Email" readonly />
+        <input type="password" id="password" placeholder="Password" />
+
+        <button onclick="signup()">Create Account & Join</button>
+
+        <div class="error" id="error"></div>
+    </div>
+
+    <script>
+        const inviteToken = new URLSearchParams(window.location.search).get("token");
+
+        async function signup() {
+            const name = document.getElementById("name").value.trim();
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+
+            if (!name || !password) {
+                showError("All fields are required");
+                return;
+            }
+
+            try {
+                const res = await fetch(`http://localhost:8080/register/invited/user/${inviteToken}`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        name,
+                        email,
+                        password
+                    })
+                });
+
+                const data = await res.text();
+
+                if (res.ok) {
+                    alert(data);
+                }
+
+                if (!res.ok) {
+                    alert(data);
+                    return;
+                }
+
+                // Signup + Invite accepted
+                window.location.href = "http://localhost:5500/login.html";
+
+            } catch {
+                showError("Signup failed");
+            }
+        }
+
+        function showError(msg) {
+            document.getElementById("error").innerText = msg;
+        }
+    </script>
+
+</body>
+
+</html>
