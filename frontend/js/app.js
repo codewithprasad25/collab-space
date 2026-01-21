@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    const CURRENT_USER = 'Ashwani Kumar';
-    const CURRENT_USER_AVATAR = 'A';
+    const CURRENT_USER = 'Prasad Shinde';
+    const CURRENT_USER_AVATAR = 'P';
     const BOT_NAME = 'CollabBot';
 
     // Default Data (used if localStorage is empty)
