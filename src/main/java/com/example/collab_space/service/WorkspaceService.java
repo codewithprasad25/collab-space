@@ -17,5 +17,11 @@ public class WorkspaceService {
         if(user == null){
             throw new RuntimeException("User not found");
         }
+
+        if (!user.isActive()){
+            throw new RuntimeException("Inactive account");
+        }
+
+
     }
 }
