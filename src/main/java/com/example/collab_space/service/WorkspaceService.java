@@ -7,10 +7,12 @@ import com.example.collab_space.model.WorkspaceMember;
 import com.example.collab_space.repository.UserRepository;
 import com.example.collab_space.repository.WorkspaceMemberRepo;
 import com.example.collab_space.repository.WorkspaceRepo;
+import com.example.collab_space.requestDto.InviteUserDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class WorkspaceService {
@@ -39,7 +41,7 @@ public class WorkspaceService {
 
         for(WorkspaceMember workspace : list){
             if(workspace.getWorkspace().getName().equals(workspaceName)){
-                if(workspace.getRole().equals(Role.Admin)){
+                if(workspace.getRole().equals(Role.Owner)){
                     throw new RuntimeException("You already created workspace with this name");
                 }
             }
@@ -51,8 +53,24 @@ public class WorkspaceService {
         WorkspaceMember workspaceMember = new WorkspaceMember();
         workspaceMember.setWorkspace(workspace);
         workspaceMember.setUser(user);
-        workspaceMember.setRole(Role.Admin);
+        workspaceMember.setRole(Role.Owner);
         workspaceMemberRepo.save(workspaceMember);
+
+
+    }
+
+    public void inviteUser(Long workspaceId, InviteUserDto inviteUserDto) {
+        User user = userRepository.findByEmail(inviteUserDto.getAdminEmail());
+        Optional<Workspace> workspace = workspaceRepo.findById(workspaceId);  //findbyid gives us optional object bcz ans would be null so catch in optional - findbyid gives us optional in default - optional is object
+
+
+        if(user == null || workspace.get() == null){
+            throw new RuntimeException("User not found");
+        }
+
+        if (!user.isActive()){
+            throw new RuntimeException("Inactive account");
+        }
 
 
     }
