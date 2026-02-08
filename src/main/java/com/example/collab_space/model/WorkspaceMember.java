@@ -25,6 +25,9 @@ public class WorkspaceMember {
     @Enumerated(EnumType.STRING)
     Role role;
 
+    @Column(nullable = false)
+    boolean isActiveInWorkspace;
+
     @CreationTimestamp
     LocalDate joinedAt;
 }

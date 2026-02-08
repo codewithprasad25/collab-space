@@ -26,6 +26,9 @@ public class WorkspaceService {
     @Autowired
     WorkspaceRepo workspaceRepo;
 
+    @Autowired
+    MailService mailService;
+
     public void createWorkspace(String workspaceName, String loggedInEmail) {
         User user = userRepository.findByEmail(loggedInEmail);
 
@@ -64,14 +67,36 @@ public class WorkspaceService {
         Optional<Workspace> workspace = workspaceRepo.findById(workspaceId);  //findbyid gives us optional object bcz ans would be null so catch in optional - findbyid gives us optional in default - optional is object
 
 
-        if(user == null || workspace.get() == null){
-            throw new RuntimeException("User not found");
+        if(user == null || workspace.isEmpty()){
+            throw new RuntimeException("User not found or workspace does not exists");
         }
 
         if (!user.isActive()){
             throw new RuntimeException("Inactive account");
         }
 
+        List<WorkspaceMember> list = workspaceMemberRepo.findByUser(user);
+        for(WorkspaceMember workspaceMember : list){
+            if(workspaceMember.getWorkspace().getName().equals(workspace.get().getName())){
+                if((!workspaceMember.getRole().equals(Role.Owner)) && (!workspaceMember.getRole().equals(Role.Admin))){
+                    throw new RuntimeException("You are not allowed to invite anyone");
+                }
+            }
+        }
+
+        User invitedUser = userRepository.findByEmail(inviteUserDto.getUserEmail());
+
+
+        if()
+
+
+        mailService.inviteUser(user,workspace.get(),inviteUserDto.getUserEmail());
+
 
     }
+
+    //user can already exists in the workspace with the inviting email
+    //user already exists kar sakta hai app mein
+    //New user will be invited
+    //Invite page needed
 }
