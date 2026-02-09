@@ -76,6 +76,7 @@ public class WorkspaceService {
         }
 
         List<WorkspaceMember> list = workspaceMemberRepo.findByUser(user);
+
         for(WorkspaceMember workspaceMember : list){
             if(workspaceMember.getWorkspace().getName().equals(workspace.get().getName())){
                 if((!workspaceMember.getRole().equals(Role.Owner)) && (!workspaceMember.getRole().equals(Role.Admin))){
@@ -83,15 +84,18 @@ public class WorkspaceService {
                 }
             }
         }
-
         User invitedUser = userRepository.findByEmail(inviteUserDto.getUserEmail());
+        List<WorkspaceMember> invitedUserWorkspaceList = workspaceMemberRepo.findByUser(invitedUser);
 
+        for(WorkspaceMember workspaceMember : invitedUserWorkspaceList){
+            if(workspaceMember.getWorkspace().getName().equals(workspace.get().getName())){
+                throw new RuntimeException("You are inviting already existing user in your workspace");
+            }
+        }
 
-        if()
-
-
-        mailService.inviteUser(user,workspace.get(),inviteUserDto.getUserEmail());
-
+        if(invitedUser != null){
+            mailService.inviteExistingUser(user,workspace.get(),inviteUserDto.getUserEmail());
+        }
 
     }
 
@@ -99,4 +103,5 @@ public class WorkspaceService {
     //user already exists kar sakta hai app mein
     //New user will be invited
     //Invite page needed
+    //Security needed at the end of project
 }

@@ -24,10 +24,19 @@ public class MailService {
         mailSender.send(mailMessage);
     }
 
-    public void inviteUser(User user, Workspace workspace, String userEmail) {
+//    public void inviteUser(User user, Workspace workspace, String userEmail) {
+//        SimpleMailMessage mailMessage = new SimpleMailMessage();
+//        mailMessage.setTo(userEmail);
+//        mailMessage.setSubject("Invite Email");
+//        mailMessage.setText();
+//    }
+
+    public void inviteExistingUser(User user, Workspace workspace, String userEmail) {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setTo(userEmail);
         mailMessage.setSubject("Invite Email");
-        mailMessage.setText();
+        mailMessage.setText("You are invited in" +workspace.getName()+"by "+user.getName()+" Please join"+"by clicking the accept button "
+                            +"http://127.0.0.1:5500/");
+        mailSender.send(mailMessage);
     }
 }

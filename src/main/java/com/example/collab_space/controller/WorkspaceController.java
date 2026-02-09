@@ -29,8 +29,12 @@ public class WorkspaceController {
 
     @PostMapping("/invite/workspace/{workspaceId}")
     public ResponseEntity<@NonNull String> inviteUserInWorkspace(@PathVariable Long workspaceId,
-                                                                 @RequestBody InviteUserDto inviteUserDto){
-        workspaceService.inviteUser(workspaceId,inviteUserDto);
+                                                                 @RequestBody InviteUserDto inviteUserDto) {
+        try {
+            workspaceService.inviteUser(workspaceId, inviteUserDto);
+            return new ResponseEntity<>("User invited successfully",HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
+        }
     }
-
 }
