@@ -7,13 +7,14 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
 
 @Service
 public class MailService {
 
     @Autowired
     JavaMailSender mailSender;
+
+
 
     public void sendOtp(String email, Integer otp){   //this method will take email and send otp on that email
         SimpleMailMessage mailMessage = new SimpleMailMessage();

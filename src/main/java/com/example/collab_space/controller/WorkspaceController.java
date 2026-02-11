@@ -4,7 +4,6 @@ package com.example.collab_space.controller;
 import com.example.collab_space.requestDto.InviteUserDto;
 import com.example.collab_space.service.WorkspaceService;
 import lombok.NonNull;
-import org.antlr.v4.runtime.misc.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
