@@ -7,6 +7,8 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 
 @Service
 public class MailService {
@@ -32,12 +34,19 @@ public class MailService {
 //        mailMessage.setText();
 //    }
 
-    public void inviteExistingUser(User user, Workspace workspace, String userEmail) {
+    public void inviteExistingUser(User user, Workspace workspace, String userEmail, UUID inviteToken) {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setTo(userEmail);
         mailMessage.setSubject("Invite Email");
-        mailMessage.setText("You are invited in" +workspace.getName()+"by "+user.getName()+" Please join"+"by clicking the accept button "
-                            +"http://127.0.0.1:5500/");
+        mailMessage.setText("http://127.0.0.1:5502/accept.html?token="+inviteToken);
+        mailSender.send(mailMessage);
+    }
+
+    public void inviteNonExistingUser(User user, Workspace workspace, String userEmail, UUID inviteToken) {
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
+        mailMessage.setTo(userEmail);
+        mailMessage.setSubject("Invite Email");
+        mailMessage.setText("http://127.0.0.1:5502/signup.html?token="+inviteToken);
         mailSender.send(mailMessage);
     }
 }

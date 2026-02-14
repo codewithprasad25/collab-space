@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin("*")
 @RestController
 public class WorkspaceController {
 
@@ -34,6 +35,26 @@ public class WorkspaceController {
             return new ResponseEntity<>("User invited successfully",HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("/accept/invite/{invitedToken}")
+    public ResponseEntity acceptInvite(@PathVariable String invitedToken){
+        try{
+            workspaceService.acceptInvite(invitedToken);
+            return new ResponseEntity("Invitation accepted",HttpStatus.OK);
+        }catch (RuntimeException e){
+            return new ResponseEntity(e.getMessage(),HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("fetch/invited/email/{invitedToken}")
+    public ResponseEntity fetchUserEmail(@PathVariable String invitedToken){
+        try {
+            String userEmail = workspaceService.fetchUserEmail(invitedToken);
+            return new ResponseEntity(userEmail,HttpStatus.OK);
+        } catch (RuntimeException e){
+            return new ResponseEntity(e.getMessage(),HttpStatus.BAD_REQUEST);
         }
     }
 }
