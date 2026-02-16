@@ -51,7 +51,7 @@ PostgreSQL Database
 ## 🛠 Tech Stack
 
 ### Backend
-- Java 17  
+- Java 21 
 - Spring Boot  
 - Spring Data JPA  
 - Hibernate  
