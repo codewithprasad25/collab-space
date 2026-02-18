@@ -2,6 +2,7 @@ package com.example.collab_space.controller;
 
 
 import com.example.collab_space.requestDto.InviteUserDto;
+import com.example.collab_space.requestDto.UserRegistrationDto;
 import com.example.collab_space.service.WorkspaceService;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +19,12 @@ public class WorkspaceController {
 
     @PostMapping("/create/workspace/{workspaceName}")
     public ResponseEntity<@NonNull String> createWorkspace(@PathVariable String workspaceName,
-                                                           @RequestParam String loggedInEmail){
+                                                           @RequestParam String loggedInEmail) {
         try {
             workspaceService.createWorkspace(workspaceName, loggedInEmail);
             return new ResponseEntity<>("workspace created", HttpStatus.CREATED);
-        }catch (RuntimeException e){
-            return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -32,29 +33,40 @@ public class WorkspaceController {
                                                                  @RequestBody InviteUserDto inviteUserDto) {
         try {
             workspaceService.inviteUser(workspaceId, inviteUserDto);
-            return new ResponseEntity<>("User invited successfully",HttpStatus.OK);
+            return new ResponseEntity<>("User invited successfully", HttpStatus.OK);
         } catch (RuntimeException e) {
-            return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 
     @PostMapping("/accept/invite/{invitedToken}")
-    public ResponseEntity acceptInvite(@PathVariable String invitedToken){
-        try{
+    public ResponseEntity acceptInvite(@PathVariable String invitedToken) {
+        try {
             workspaceService.acceptInvite(invitedToken);
-            return new ResponseEntity("Invitation accepted",HttpStatus.OK);
-        }catch (RuntimeException e){
-            return new ResponseEntity(e.getMessage(),HttpStatus.BAD_REQUEST);
+            return new ResponseEntity("Invitation accepted", HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 
     @GetMapping("fetch/invited/email/{invitedToken}")
-    public ResponseEntity fetchUserEmail(@PathVariable String invitedToken){
+    public ResponseEntity fetchUserEmail(@PathVariable String invitedToken) {
         try {
             String userEmail = workspaceService.fetchUserEmail(invitedToken);
-            return new ResponseEntity(userEmail,HttpStatus.OK);
-        } catch (RuntimeException e){
-            return new ResponseEntity(e.getMessage(),HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(userEmail, HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("/register/invited/user/{inviteToken}")
+    public ResponseEntity registerInvitedUser(@RequestBody UserRegistrationDto registrationDto,
+                                              @PathVariable String inviteToken) {
+        try {
+            workspaceService.registerInvitedUser(inviteToken, registrationDto);
+            return new ResponseEntity("Invitation accepted", HttpStatus.CREATED);
+        } catch (RuntimeException e) {
+            return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 }

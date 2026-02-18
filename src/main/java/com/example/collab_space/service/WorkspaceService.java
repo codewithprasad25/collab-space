@@ -11,6 +11,7 @@ import com.example.collab_space.repository.WorkspaceInviteRepo;
 import com.example.collab_space.repository.WorkspaceMemberRepo;
 import com.example.collab_space.repository.WorkspaceRepo;
 import com.example.collab_space.requestDto.InviteUserDto;
+import com.example.collab_space.requestDto.UserRegistrationDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -168,7 +169,7 @@ public class WorkspaceService {
     }
 
     public String fetchUserEmail(String invitedToken) {
-        WorkspaceInvite workspaceInvite = workspaceInviteRepo.findByInviteToken(UUID.fromString(invitedToken));  //take workspaceInvite object with the help of toke
+        WorkspaceInvite workspaceInvite = workspaceInviteRepo.findByInviteToken(UUID.fromString(invitedToken));  //take workspaceInvite object with the help of token
                                                                                                                     // String type convert to UUID type
         if(workspaceInvite == null){
             throw new RuntimeException("Invalid invitation");
@@ -186,7 +187,47 @@ public class WorkspaceService {
 
         return workspaceInvite.getEmail();
     }
+
+    public void registerInvitedUser(String inviteToken, UserRegistrationDto registrationDto) {
+        WorkspaceInvite workspaceInvite = workspaceInviteRepo.findByInviteToken(UUID.fromString(inviteToken));  //take workspaceInvite object with the help of token
+                                                                                                                // String type convert to UUID type
+        if(workspaceInvite == null){
+            throw new RuntimeException("Invalid invitation");
+        }
+
+        User user = userRepository.findByEmail(workspaceInvite.getEmail());
+
+        if(user != null){
+            throw new RuntimeException("User already  exists with this email");
+        }
+
+        if(LocalDateTime.now().isAfter(workspaceInvite.getExpiresAt())){
+            throw new RuntimeException("Invitation is expired");
+        }
+
+        if(workspaceInvite.getInviteStatus().equals(InviteStatus.Accepted) || workspaceInvite.getInviteStatus().equals(InviteStatus.Rejected)){
+            throw new RuntimeException("You already accepted or rejected the invitation");
+        }
+
+        User invitedUser = new User();
+        invitedUser.setName(registrationDto.getName());
+        invitedUser.setEmail(registrationDto.getEmail());
+        invitedUser.setPassword(registrationDto.getPassword());
+        invitedUser.setCreatedAt(LocalDate.now());
+        invitedUser.setActive(true);
+        userRepository.save(invitedUser);
+
+        WorkspaceMember workspaceMember = new WorkspaceMember();
+        workspaceMember.setWorkspace(workspaceInvite.getWorkspace());
+        workspaceMember.setUser(invitedUser);
+        workspaceMember.setActiveInWorkspace(true);
+        workspaceMember.setRole(workspaceInvite.getUserRole());
+        workspaceMember.setJoinedAt(LocalDate.now());
+        workspaceMemberRepo.save(workspaceMember);
+    }
+
 }
+
 
     //user can already exist in the workspace with the inviting email
     //user already exists kar sakta hai app mein
