@@ -15,10 +15,11 @@ public class ChannelController {
     @Autowired
     ChannelService channelService;
 
-    @PostMapping("/create")
-    public ResponseEntity createChannel(@RequestBody ChannelCreationDto channelCreationDto) {
+    @PostMapping("/create/{userId}")
+    public ResponseEntity createChannel(@RequestBody ChannelCreationDto channelCreationDto,
+                                        @PathVariable Long userId) {
         try {
-            channelService.createChannel(channelCreationDto);
+            channelService.createChannel(userId,channelCreationDto);
             return new ResponseEntity("Channel created successfully", HttpStatus.CREATED);
         } catch (RuntimeException e) {
             return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
