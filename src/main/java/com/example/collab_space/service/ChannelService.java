@@ -2,6 +2,7 @@ package com.example.collab_space.service;
 
 import com.example.collab_space.model.*;
 import com.example.collab_space.repository.*;
+import com.example.collab_space.requestDto.AddChannelMemberDto;
 import com.example.collab_space.requestDto.ChannelCreationDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -74,7 +75,6 @@ public class ChannelService {
             channelMember.setJoinedAt(LocalDate.now());
             channelMemberRepo.save(channelMember);
         }else {
-
             for (WorkspaceMember workspaceMember : list) {
                 ChannelMember channelMember = new ChannelMember();
                 channelMember.setUser(workspaceMember.getUser());
@@ -84,5 +84,74 @@ public class ChannelService {
             }
         }
 
+    }
+
+    public void addChannelMember(Long userId, AddChannelMemberDto channelMemberDto) {
+        Optional<Workspace> workspace = workspaceRepo.findById(channelMemberDto.getWorkspaceId());  //find by id return optional object defaultly
+        //optional means one empty box in that workspace will present or not to be present
+
+        if (workspace.isEmpty()) {  //this workspace variable is not of Workspace type its Optional type
+            throw new RuntimeException("Workspace does not exists");
+        }
+        Optional<Channel> channel1 = channelRepo.findById(channelMemberDto.getChannelId());
+
+        if (channel1.isEmpty()) {
+            throw new RuntimeException("Channel does not exists");
+        }
+
+        Optional<User> user = userRepository.findById(userId);
+        Optional<User> member = userRepository.findById(channelMemberDto.getMemberId());
+        if (user.isEmpty() || member.isEmpty()) {
+            throw new RuntimeException("User does not exists");
+        }
+
+        List<WorkspaceMember> list = workspaceMemberRepo.findByWorkspace(workspace.get());
+        boolean isUserExists = false;
+        boolean isMemberExists = false;
+
+        for (WorkspaceMember workspaceMember : list) {
+            if (isMemberExists && isUserExists) {
+                break;
+            }
+
+            if (workspaceMember.getUser() == user.get()) {
+                isUserExists = true;
+            } else if (workspaceMember.getUser() == member.get()) {
+                isMemberExists = true;
+            }
+        }
+
+        if (!isMemberExists || !isUserExists) {
+            throw new RuntimeException("User is not in our workspace");
+        }
+
+        isUserExists = false;
+        isMemberExists = false;
+
+        List<ChannelMember> channelMembers = channelMemberRepo.findByChannel(channel1.get());
+
+        for (ChannelMember cm : channelMembers) {
+            if (isMemberExists && isUserExists) {
+                break;
+            }
+            if (cm.getUser() == user.get()) {
+                isUserExists = true;
+            } else if (cm.getUser() == member.get()) {
+                isMemberExists = true;
+
+            }
+        }
+
+        if (isMemberExists) {
+            throw new RuntimeException("User already in the channel");
+        } else if (!isUserExists) {
+            throw new RuntimeException("Invalid invitation");
+        } else {
+            ChannelMember channelMember = new ChannelMember();
+            channelMember.setChannel(channel1.get());
+            channelMember.setUser(member.get());
+            channelMember.setJoinedAt(LocalDate.now());
+            channelMemberRepo.save(channelMember);
+        }
     }
 }
