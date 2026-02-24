@@ -4,10 +4,13 @@ import com.example.collab_space.model.*;
 import com.example.collab_space.repository.*;
 import com.example.collab_space.requestDto.AddChannelMemberDto;
 import com.example.collab_space.requestDto.ChannelCreationDto;
+import com.example.collab_space.requestDto.UserChannelReqDto;
+import com.example.collab_space.responseDto.ChannelResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -154,4 +157,50 @@ public class ChannelService {
             channelMemberRepo.save(channelMember);
         }
     }
+
+    public List<ChannelResponseDto> fetchUserChannel(UserChannelReqDto reqDto) {
+        Optional<Workspace> workspace = workspaceRepo.findById(reqDto.getWorkspaceId());  //find by id return optional object defaultly
+        //optional means one empty box in that workspace will present or not to be present
+
+
+        User user = userRepository.findByEmail(reqDto.getUserEmail());
+        if (user == null || user.isActive()) {
+            throw new RuntimeException("User does not exists or inactive account");
+        }
+
+        if (workspace.isEmpty()) {  //this workspace variable is not of Workspace type its Optional type
+            throw new RuntimeException("Workspace does not exists");
+        }
+
+        List<WorkspaceMember> list = workspaceMemberRepo.findByWorkspace(workspace.get());
+        boolean isUserExists = false;
+
+        for (WorkspaceMember workspaceMember : list) {
+            if(workspaceMember.getUser() == user){
+                isUserExists = true;
+                break;
+            }
+        }
+        if(!isUserExists){
+            throw new RuntimeException("User is not in our workspace");
+        }
+
+        List<Channel> channels = channelRepo.findByWorkspace(workspace.get());
+        List<ChannelResponseDto> responseDtos = new ArrayList<>();
+
+        for(Channel channel : channels){
+            List<ChannelMember> channelMembers = channelMemberRepo.findByChannel(channel);
+            for(ChannelMember member : channelMembers){
+                if(member.getUser() == user){
+                    ChannelResponseDto responseDto = new ChannelResponseDto();
+                    responseDto.setChannelId(channel.getId());
+                    responseDto.setChannelName(channel.getName());
+                    responseDto.setPrivate(channel.isPrivate());
+                    responseDtos.add(responseDto);
+                }
+            }
+        }
+        return responseDtos;
+    }
+
 }

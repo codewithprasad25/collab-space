@@ -12,11 +12,13 @@ import com.example.collab_space.repository.WorkspaceMemberRepo;
 import com.example.collab_space.repository.WorkspaceRepo;
 import com.example.collab_space.requestDto.InviteUserDto;
 import com.example.collab_space.requestDto.UserRegistrationDto;
+import com.example.collab_space.responseDto.WorkspaceResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -226,6 +228,38 @@ public class WorkspaceService {
         workspaceMemberRepo.save(workspaceMember);
     }
 
+    public List<WorkspaceResponseDto> fetchUserWorkspace(String userEmail) {
+        User user = userRepository.findByEmail(userEmail);
+
+        if(user == null){
+            throw new RuntimeException("User not found");
+        }
+
+        if(!user.isActive()){
+            throw new RuntimeException("Inactive account");
+        }
+
+        List<WorkspaceMember> list  = workspaceMemberRepo.findByUser(user);
+        List<WorkspaceResponseDto> responseDtoList = new ArrayList<>();
+
+        for(WorkspaceMember workspaceMember : list){
+            if(workspaceMember.isActiveInWorkspace()){
+                WorkspaceResponseDto responseDto = new WorkspaceResponseDto();
+                responseDto.setWorkspaceId(workspaceMember.getWorkspace().getId());
+                responseDto.setWorkspaceName(workspaceMember.getWorkspace().getName());
+                responseDto.setUserRole(String.valueOf(workspaceMember.getRole()));
+                responseDtoList.add(responseDto);
+            }
+        }
+        return responseDtoList;
+
+        //workspaceId
+        //workspaceName
+        //workspaceRole
+
+        //isActiveInWorkspace
+
+    }
 }
 
 

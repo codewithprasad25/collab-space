@@ -11,3 +11,7 @@ public class CollabSpaceApplication {
 	}
 
 }
+
+//list of workspace
+//list of public and private channels
+//list of workspace members
