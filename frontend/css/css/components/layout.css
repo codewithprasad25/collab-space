@@ -1,0 +1,83 @@
+/* css/components/layout.css - Main layout grid */
+
+.app-layout {
+    display: grid;
+    height: 100vh;
+    width: 100vw;
+    grid-template-columns: 70px 260px 1fr;
+    overflow: hidden;
+}
+
+
+/* --- COLUMN 1: Workspace Rail --- */
+
+.workspace-rail {
+    background-color: #350d36;
+    padding-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    z-index: 10;
+}
+
+.rail-item {
+    width: 44px;
+    height: 44px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.rail-item:hover {
+    border-radius: 12px;
+    box-shadow: 0 0 0 2px white;
+}
+
+.rail-item.active {
+    border-radius: 12px;
+    box-shadow: 0 0 0 2px white;
+    background: var(--white);
+}
+
+.rail-item.active .ws-initials {
+    color: var(--primary-color);
+}
+
+.ws-initials {
+    color: var(--white);
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.add-ws {
+    background: rgba(255, 255, 255, 0.15);
+    font-size: 1.5rem;
+    color: var(--white);
+    transition: all 0.2s;
+}
+
+.add-ws:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.4);
+}
+
+.refresh-btn {
+    background: rgba(255, 255, 255, 0.15);
+    font-size: 1.2rem;
+    color: var(--white);
+    transition: all 0.2s;
+    margin-top: auto;
+    margin-bottom: 0.5rem;
+}
+
+.refresh-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.4);
+}

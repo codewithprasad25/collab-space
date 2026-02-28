@@ -38,7 +38,7 @@ public class MailService {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setTo(userEmail);
         mailMessage.setSubject("Invite Email");
-        mailMessage.setText("http://127.0.0.1:5502/accept.html?token="+inviteToken);
+        mailMessage.setText("http://127.0.0.1:5503/accept.html?token="+inviteToken);
         mailSender.send(mailMessage);
     }
 
@@ -46,7 +46,7 @@ public class MailService {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setTo(userEmail);
         mailMessage.setSubject("Invite Email");
-        mailMessage.setText("http://127.0.0.1:5502/signup.html?token="+inviteToken);
+        mailMessage.setText("http://127.0.0.1:5503/signup.html?token="+inviteToken);
         mailSender.send(mailMessage);
     }
 }

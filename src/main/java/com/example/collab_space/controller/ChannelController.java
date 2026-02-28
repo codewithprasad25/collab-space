@@ -20,29 +20,29 @@ public class ChannelController {
     @Autowired
     ChannelService channelService;
 
-    @PostMapping("/create/{userId}")
+    @PostMapping("/create/{userEmail}")
     public ResponseEntity createChannel(@RequestBody ChannelCreationDto channelCreationDto,
-                                        @PathVariable Long userId) {
+                                        @PathVariable String userEmail) {
         try {
-            channelService.createChannel(userId,channelCreationDto);
+            channelService.createChannel(userEmail, channelCreationDto);
             return new ResponseEntity("Channel created successfully", HttpStatus.CREATED);
         } catch (RuntimeException e) {
             return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 
-    @PostMapping("/add/channel/member/{userId}")
+    @PostMapping("/add/channel/member/{userEmail}")
     public ResponseEntity addChannelMember(@RequestBody AddChannelMemberDto channelMemberDto,
-                                           @PathVariable Long userId){
+                                           @PathVariable String userEmail){
         try{
-            channelService.addChannelMember(userId,channelMemberDto);
+            channelService.addChannelMember(userEmail, channelMemberDto);
             return new ResponseEntity("Member added in channel",HttpStatus.OK);
         }catch(RuntimeException e){
             return new ResponseEntity(e.getMessage(),HttpStatus.BAD_REQUEST);
         }
     }
 
-    @GetMapping("/fetch/users/channels")
+    @PostMapping("/fetch/users/channels")
     public ResponseEntity fetchChannel(@RequestBody UserChannelReqDto reqDto){
         try{
         List<ChannelResponseDto> list =  channelService.fetchUserChannel(reqDto);

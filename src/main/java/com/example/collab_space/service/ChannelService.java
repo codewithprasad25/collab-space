@@ -32,7 +32,7 @@ public class ChannelService {
     @Autowired
     ChannelMemberRepo channelMemberRepo;
 
-    public void createChannel(Long userId, ChannelCreationDto channelCreationDto) {
+    public void createChannel(String userEmail, ChannelCreationDto channelCreationDto) {
         Optional<Workspace> workspace = workspaceRepo.findById(channelCreationDto.getWorkspaceId());  //find by id return optional object defaultly
         //optional means one empty box in that workspace will present or not to be present
 
@@ -45,15 +45,15 @@ public class ChannelService {
             throw new RuntimeException("Channel with this name already exists");
         }
 
-        Optional <User> user = userRepository.findById(userId);
-        if(user.isEmpty()){
+        User user = userRepository.findByEmail(userEmail);
+        if(user == null){
             throw new RuntimeException("User does not exists");
         }
 
         List<WorkspaceMember> list = workspaceMemberRepo.findByWorkspace(workspace.get());
         boolean isMember = false;
         for(WorkspaceMember workspaceMember : list){
-            if(workspaceMember.getUser() == user.get()){
+            if(workspaceMember.getUser().equals(user)){
                 isMember = true;
                 break;
             }
@@ -74,7 +74,7 @@ public class ChannelService {
         if(Boolean.parseBoolean(channelCreationDto.getIsPrivate())){
             ChannelMember channelMember = new ChannelMember();
             channelMember.setChannel(channel);
-            channelMember.setUser(user.get());
+            channelMember.setUser(user);
             channelMember.setJoinedAt(LocalDate.now());
             channelMemberRepo.save(channelMember);
         }else {
@@ -89,7 +89,7 @@ public class ChannelService {
 
     }
 
-    public void addChannelMember(Long userId, AddChannelMemberDto channelMemberDto) {
+    public void addChannelMember(String userEmail, AddChannelMemberDto channelMemberDto) {
         Optional<Workspace> workspace = workspaceRepo.findById(channelMemberDto.getWorkspaceId());  //find by id return optional object defaultly
         //optional means one empty box in that workspace will present or not to be present
 
@@ -102,9 +102,9 @@ public class ChannelService {
             throw new RuntimeException("Channel does not exists");
         }
 
-        Optional<User> user = userRepository.findById(userId);
+        User user = userRepository.findByEmail(userEmail);
         Optional<User> member = userRepository.findById(channelMemberDto.getMemberId());
-        if (user.isEmpty() || member.isEmpty()) {
+        if (user == null || member.isEmpty()) {
             throw new RuntimeException("User does not exists");
         }
 
@@ -117,9 +117,9 @@ public class ChannelService {
                 break;
             }
 
-            if (workspaceMember.getUser() == user.get()) {
+            if (workspaceMember.getUser().equals(user)) {
                 isUserExists = true;
-            } else if (workspaceMember.getUser() == member.get()) {
+            } else if (workspaceMember.getUser().equals(member.get())) {
                 isMemberExists = true;
             }
         }
@@ -137,9 +137,9 @@ public class ChannelService {
             if (isMemberExists && isUserExists) {
                 break;
             }
-            if (cm.getUser() == user.get()) {
+            if (cm.getUser().equals(user)) {
                 isUserExists = true;
-            } else if (cm.getUser() == member.get()) {
+            } else if (cm.getUser().equals(member.get())) {
                 isMemberExists = true;
 
             }
@@ -164,7 +164,7 @@ public class ChannelService {
 
 
         User user = userRepository.findByEmail(reqDto.getUserEmail());
-        if (user == null || user.isActive()) {
+        if (user == null || !user.isActive()) {
             throw new RuntimeException("User does not exists or inactive account");
         }
 
@@ -176,7 +176,7 @@ public class ChannelService {
         boolean isUserExists = false;
 
         for (WorkspaceMember workspaceMember : list) {
-            if(workspaceMember.getUser() == user){
+            if(workspaceMember.getUser().equals(user)){
                 isUserExists = true;
                 break;
             }
@@ -191,7 +191,7 @@ public class ChannelService {
         for(Channel channel : channels){
             List<ChannelMember> channelMembers = channelMemberRepo.findByChannel(channel);
             for(ChannelMember member : channelMembers){
-                if(member.getUser() == user){
+                if(member.getUser().equals(user)){
                     ChannelResponseDto responseDto = new ChannelResponseDto();
                     responseDto.setChannelId(channel.getId());
                     responseDto.setChannelName(channel.getName());

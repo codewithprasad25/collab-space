@@ -1,0 +1,132 @@
+/* css/components/sidebar.css - Sidebar styles */
+
+.channel-sidebar {
+    background-color: #3F0E40;
+    color: #cfc3cf;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-header {
+    height: 49px;
+    padding: 0 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.sidebar-header:hover {
+    background-color: #350d36;
+}
+
+.workspace-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--white);
+}
+
+.edit-btn {
+    background: white;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    color: var(--primary-color);
+    cursor: pointer;
+}
+
+.sidebar-scroll-area {
+    flex: 1;
+    overflow-y: auto;
+    padding-top: 1rem;
+}
+
+.sidebar-scroll-area::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar-scroll-area::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+}
+
+.section-header {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+}
+
+.section-header:hover {
+    color: var(--white);
+}
+
+.section-header .fa-caret-down {
+    transition: transform 0.2s ease;
+}
+
+.sidebar-section.collapsed .section-header .fa-caret-down {
+    transform: rotate(-90deg);
+}
+
+.sidebar-section.collapsed ul {
+    display: none;
+}
+
+.channel-list,
+.dm-list {
+    list-style: none;
+    margin-bottom: 1.5rem;
+}
+
+.channel-item {
+    padding: 4px 1rem 4px 2rem;
+    cursor: pointer;
+    opacity: 0.8;
+}
+
+.channel-item:hover {
+    background-color: #350d36;
+    opacity: 1;
+}
+
+.channel-item.active {
+    background-color: #1164A3;
+    color: var(--white);
+    opacity: 1;
+}
+
+.channel-hash {
+    opacity: 0.7;
+    margin-right: 5px;
+}
+
+
+/* Invite Member Button */
+
+.invite-member-btn {
+    width: 90%;
+    margin: 1rem auto;
+    padding: 0.75rem;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.invite-member-btn:hover {
+    background: #0a472f;
+}

@@ -4,29 +4,34 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
     <title>Collab-Space | General</title>
 
     <script>
-        const user = localStorage.getItem('isLoggedIn');
-        if (!user) {
-            window.location.href = 'login.html';
+        const isLoggedIn = localStorage.getItem("isLoggedIn");
+        if (isLoggedIn !== "true") {
+            window.location.href = "login.html";
         }
     </script>
 
     <link rel="stylesheet" href="css/css/global.css" />
     <link rel="stylesheet" href="css/css/app.css" />
+    <!-- Component Styles -->
+    <link rel="stylesheet" href="css/css/components/layout.css" />
+    <link rel="stylesheet" href="css/css/components/sidebar.css" />
+    <link rel="stylesheet" href="css/css/components/chat.css" />
+    <link rel="stylesheet" href="css/css/components/modal.css" />
+    <link rel="stylesheet" href="css/css/components/radio-cards.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 </head>
 
 <body>
     <div class="app-layout">
-        <nav class="workspace-rail">
-            <div class="rail-item active">
-                <span class="ws-initials">CS</span>
-            </div>
-            <div class="rail-item">
-                <span class="ws-initials">P2</span>
-            </div>
+        <nav class="workspace-rail" id="workspaceRail">
             <div class="rail-item add-ws">
                 <i class="fa-solid fa-plus"></i>
             </div>
@@ -34,7 +39,7 @@
 
         <aside class="channel-sidebar">
             <div class="sidebar-header">
-                <h2 class="workspace-name">
+                <h2 class="workspace-name" id="workspaceTitle">
                     Collab-Space <i class="fa-solid fa-chevron-down"></i>
                 </h2>
                 <button class="edit-btn">
@@ -65,11 +70,10 @@
                     <div class="section-header">
                         <span><i class="fa-solid fa-caret-right"></i> Direct Messages</span
               >
-              <i class="fa-solid fa-plus add-channel-icon"></i>
             </div>
             <ul class="dm-list">
               <li class="channel-item user-status online">
-                <i class="fa-solid fa-circle"></i> Prasad Shinde
+                <i class="fa-solid fa-circle"></i> Ashwani Kumar
                 <span class="you-badge">(you)</span>
                         </li>
                         <li class="channel-item user-status offline">
@@ -78,6 +82,10 @@
                         </ul>
                     </div>
                 </div>
+
+                <button class="invite-member-btn">
+          <i class="fa-solid fa-user-plus"></i> Invite Member
+        </button>
         </aside>
 
         <main class="chat-area">
@@ -89,11 +97,9 @@
                     </p>
                 </div>
                 <div class="header-right">
-                    <div class="avatar-stack">
-                        <div class="avatar-circle" style="background: purple">A</div>
-                        <div class="avatar-circle" style="background: blue">S</div>
-                    </div>
-                    <span class="member-count">24</span>
+                    <button class="add-channel-member-btn" title="Add member to channel">
+              <i class="fa-solid fa-user-plus"></i>
+            </button>
                 </div>
             </header>
 
@@ -135,7 +141,119 @@
         </main>
         </div>
 
-        <div id="channelModal" class="modal-overlay hidden">
+        <div id="inviteMemberModal" class="modal-overlay">
+            <div class="modal-container">
+                <div class="modal-header">
+                    <h2>Invite Member</h2>
+                    <button class="close-modal-btn">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <p class="modal-desc">
+                        Add a new member to your workspace by entering their email and selecting a role.
+                    </p>
+
+                    <form id="inviteMemberForm">
+                        <div class="form-group">
+                            <label for="memberEmail">Email</label>
+                            <input type="email" id="memberEmail" class="form-input" placeholder="user@example.com" autocomplete="off" required />
+                        </div>
+
+                        <div class="form-group">
+                            <label>Role</label>
+                            <div class="role-group">
+                                <label class="role-option selected">
+                  <input
+                    type="radio"
+                    name="memberRole"
+                    value="member"
+                    checked
+                  />
+                  <span class="role-label">Member</span>
+                </label>
+                                <label class="role-option">
+                  <input
+                    type="radio"
+                    name="memberRole"
+                    value="admin"
+                  />
+                  <span class="role-label">Admin</span>
+                </label>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn-secondary close-modal-btn">
+                Cancel
+              </button>
+                            <button type="submit" class="btn-primary" id="inviteMemberBtn">Invite</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div id="addChannelMemberModal" class="modal-overlay">
+            <div class="modal-container">
+                <div class="modal-header">
+                    <h2>Add Member to Channel</h2>
+                    <button class="close-modal-btn">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <p class="modal-desc">
+                        Search and add members to this channel.
+                    </p>
+
+                    <form id="addChannelMemberForm">
+                        <div class="form-group">
+                            <label for="memberSearchInput">Search Member</label>
+                            <input type="text" id="memberSearchInput" class="form-input" placeholder="Search by name or email..." autocomplete="off" />
+                        </div>
+
+                        <div id="memberSearchResults" class="member-search-results"></div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn-secondary close-modal-btn">
+                Cancel
+              </button>
+                            <button type="submit" class="btn-primary" id="addMemberBtn">Add Member</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div id="workspaceModal" class="modal-overlay">
+            <div class="modal-container">
+                <div class="modal-header">
+                    <h2>Create a workspace</h2>
+                    <button class="close-modal-btn">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <p class="modal-desc">
+                        Create a new workspace to collaborate with your team on different projects.
+                    </p>
+
+                    <form id="createWorkspaceForm">
+                        <div class="form-group">
+                            <label for="newWorkspaceName">Workspace Name</label>
+                            <input type="text" id="newWorkspaceName" class="form-input" placeholder="e.g. Marketing Team" autocomplete="off" required />
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn-secondary close-modal-btn">
+                Cancel
+              </button>
+                            <button type="submit" class="btn-primary" id="createWorkspaceBtn">Create</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div id="channelModal" class="modal-overlay">
             <div class="modal-container">
                 <div class="modal-header">
                     <h2>Create a channel</h2>
@@ -193,11 +311,6 @@
                             </div>
                         </div>
 
-                        <div class="form-group">
-                            <label for="newChannelDesc">Description (optional)</label>
-                            <input type="text" id="newChannelDesc" class="form-input" placeholder="What's this channel about?" />
-                        </div>
-
                         <div class="modal-footer">
                             <button type="button" class="btn-secondary close-modal-btn">
                 Cancel
@@ -209,6 +322,15 @@
             </div>
         </div>
 
+        <!-- Scripts -->
+        <script src="js/store.js"></script>
+        <script src="js/api.js"></script>
+        <script src="js/messaging.js"></script>
+        <script src="js/workspace-manager.js"></script>
+        <script src="js/models/workspace-modal.js"></script>
+        <script src="js/models/channel-modal.js"></script>
+        <script src="js/models/invite-member-modal.js"></script>
+        <script src="js/models/add-channel-member-modal.js"></script>
         <script src="js/app.js"></script>
 </body>
 

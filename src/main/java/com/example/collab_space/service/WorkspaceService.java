@@ -11,7 +11,9 @@ import com.example.collab_space.repository.WorkspaceInviteRepo;
 import com.example.collab_space.repository.WorkspaceMemberRepo;
 import com.example.collab_space.repository.WorkspaceRepo;
 import com.example.collab_space.requestDto.InviteUserDto;
+import com.example.collab_space.requestDto.UserChannelReqDto;
 import com.example.collab_space.requestDto.UserRegistrationDto;
+import com.example.collab_space.responseDto.WorkspaceMemberDto;
 import com.example.collab_space.responseDto.WorkspaceResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,7 +27,6 @@ import java.util.UUID;
 
 @Service
 public class WorkspaceService {
-
     @Autowired
     UserRepository userRepository;
 
@@ -48,7 +49,7 @@ public class WorkspaceService {
             throw new RuntimeException("User not found");
         }
 
-        if (!user.isActive()){
+        if(!user.isActive()){
             throw new RuntimeException("Inactive account");
         }
 
@@ -61,6 +62,7 @@ public class WorkspaceService {
                 }
             }
         }
+
         Workspace workspace = new Workspace();
         workspace.setName(workspaceName);
         workspaceRepo.save(workspace);
@@ -69,52 +71,53 @@ public class WorkspaceService {
         workspaceMember.setWorkspace(workspace);
         workspaceMember.setUser(user);
         workspaceMember.setRole(Role.Owner);
+        workspaceMember.setActiveInWorkspace(true);
         workspaceMemberRepo.save(workspaceMember);
-
-
     }
 
-    public void inviteUser(Long workspaceId, InviteUserDto inviteUserDto) {
+    public void inviteUser(Long workspaceId, InviteUserDto inviteUserDto){
         User user = userRepository.findByEmail(inviteUserDto.getAdminEmail());
-        Optional<Workspace> optionalWorkspace= workspaceRepo.findById(workspaceId);  //findbyid gives us optional object bcz ans would be null so catch in optional - findbyid gives us optional in default - optional is object
-
+        Optional<Workspace> optionalWorkspace = workspaceRepo.findById(workspaceId);
 
         if(user == null || optionalWorkspace.isEmpty()){
-            throw new RuntimeException("User not found or workspace does not exists");
+            throw new RuntimeException("User not found Or workspace does not exists");
         }
 
-        if (!user.isActive()){
+        if(!user.isActive()){
             throw new RuntimeException("Inactive account");
         }
 
         List<WorkspaceMember> list = workspaceMemberRepo.findByUser(user);
+        Workspace isUserPartOfWorkspace = null;
 
         for(WorkspaceMember workspaceMember : list){
-            if(workspaceMember.getWorkspace().getName().equals(optionalWorkspace.get().getName())){
+            if(workspaceMember.getWorkspace().getId().equals(workspaceId)){
+                isUserPartOfWorkspace = workspaceMember.getWorkspace();
                 if((!workspaceMember.getRole().equals(Role.Owner)) && (!workspaceMember.getRole().equals(Role.Admin))){
                     throw new RuntimeException("You are not allowed to invite anyone");
                 }
             }
         }
 
+        if(isUserPartOfWorkspace == null){
+            throw new RuntimeException("You are not part of this workspace");
+        }
+
         User invitedUser = userRepository.findByEmail(inviteUserDto.getUserEmail());
         WorkspaceInvite workspaceInvite = null;
-
-
-        if(invitedUser == null) {
+        if(invitedUser == null){
             workspaceInvite = new WorkspaceInvite();
             workspaceInvite.setInviteStatus(InviteStatus.Pending);
             workspaceInvite.setInvitedAt(LocalDateTime.now());
-            workspaceInvite.setWorkspace(optionalWorkspace.get());  //after using .get() we will get object from optional workspace datatype
+            workspaceInvite.setWorkspace(optionalWorkspace.get());
             workspaceInvite.setInviteToken(UUID.randomUUID());
             workspaceInvite.setEmail(inviteUserDto.getUserEmail());
             workspaceInvite.setExpiresAt(workspaceInvite.getInvitedAt().plusDays(2));
             workspaceInvite.setUserRole(inviteUserDto.getUserRole());
             workspaceInviteRepo.save(workspaceInvite);
-            mailService.inviteNonExistingUser(user,optionalWorkspace.get(),inviteUserDto.getUserEmail(),workspaceInvite.getInviteToken());
-        }
+            mailService.inviteNonExistingUser(user, optionalWorkspace.get(), inviteUserDto.getUserEmail(),workspaceInvite.getInviteToken());
+        }else {
 
-        else {
             List<WorkspaceMember> invitedUserWorkspaceList = workspaceMemberRepo.findByUser(invitedUser);
 
             for (WorkspaceMember workspaceMember : invitedUserWorkspaceList) {
@@ -122,10 +125,11 @@ public class WorkspaceService {
                     throw new RuntimeException("You are inviting already existing user in your workspace");
                 }
             }
+
             workspaceInvite = new WorkspaceInvite();
             workspaceInvite.setInviteStatus(InviteStatus.Pending);
             workspaceInvite.setInvitedAt(LocalDateTime.now());
-            workspaceInvite.setWorkspace(optionalWorkspace.get());  //after using .get() we will get object from optional workspace datatype
+            workspaceInvite.setWorkspace(optionalWorkspace.get());
             workspaceInvite.setInviteToken(UUID.randomUUID());
             workspaceInvite.setEmail(inviteUserDto.getUserEmail());
             workspaceInvite.setExpiresAt(workspaceInvite.getInvitedAt().plusDays(2));
@@ -134,12 +138,11 @@ public class WorkspaceService {
 
             mailService.inviteExistingUser(user, optionalWorkspace.get(), inviteUserDto.getUserEmail(), workspaceInvite.getInviteToken());
         }
+    }
 
-        }
+    public void acceptInvite(String invitedToken) {
+        WorkspaceInvite workspaceInvite = workspaceInviteRepo.findByInviteToken(UUID.fromString(invitedToken));
 
-    public void acceptInvite(String invitedToken) {   //which invite create against this invitedToken
-        WorkspaceInvite workspaceInvite = workspaceInviteRepo.findByInviteToken(UUID.fromString(invitedToken));  //take workspaceInvite object with the help of token
-                                                                                                                    //String type convert to UUID type
         if(workspaceInvite == null){
             throw new RuntimeException("Invalid invitation");
         }
@@ -155,7 +158,7 @@ public class WorkspaceService {
         }
 
         if(workspaceInvite.getInviteStatus().equals(InviteStatus.Accepted) || workspaceInvite.getInviteStatus().equals(InviteStatus.Rejected)){
-            throw new RuntimeException("You already accepted or rejected the invitation");
+            throw new RuntimeException("You already accepted or rejected this invitation");
         }
 
         workspaceInvite.setInviteStatus(InviteStatus.Accepted);
@@ -168,11 +171,12 @@ public class WorkspaceService {
         workspaceMember.setUser(user);
         workspaceMember.setWorkspace(workspaceInvite.getWorkspace());
         workspaceMemberRepo.save(workspaceMember);
+
     }
 
     public String fetchUserEmail(String invitedToken) {
-        WorkspaceInvite workspaceInvite = workspaceInviteRepo.findByInviteToken(UUID.fromString(invitedToken));  //take workspaceInvite object with the help of token
-                                                                                                                    // String type convert to UUID type
+        WorkspaceInvite workspaceInvite = workspaceInviteRepo.findByInviteToken(UUID.fromString(invitedToken));
+
         if(workspaceInvite == null){
             throw new RuntimeException("Invalid invitation");
         }
@@ -180,7 +184,7 @@ public class WorkspaceService {
         User user = userRepository.findByEmail(workspaceInvite.getEmail());
 
         if(user != null){
-            throw new RuntimeException("User already  exists with this email");
+            throw new RuntimeException("User already exists with this email");
         }
 
         if(LocalDateTime.now().isAfter(workspaceInvite.getExpiresAt())){
@@ -191,8 +195,8 @@ public class WorkspaceService {
     }
 
     public void registerInvitedUser(String inviteToken, UserRegistrationDto registrationDto) {
-        WorkspaceInvite workspaceInvite = workspaceInviteRepo.findByInviteToken(UUID.fromString(inviteToken));  //take workspaceInvite object with the help of token
-                                                                                                                // String type convert to UUID type
+        WorkspaceInvite workspaceInvite = workspaceInviteRepo.findByInviteToken(UUID.fromString(inviteToken));
+
         if(workspaceInvite == null){
             throw new RuntimeException("Invalid invitation");
         }
@@ -200,7 +204,7 @@ public class WorkspaceService {
         User user = userRepository.findByEmail(workspaceInvite.getEmail());
 
         if(user != null){
-            throw new RuntimeException("User already  exists with this email");
+            throw new RuntimeException("User already exists");
         }
 
         if(LocalDateTime.now().isAfter(workspaceInvite.getExpiresAt())){
@@ -208,7 +212,7 @@ public class WorkspaceService {
         }
 
         if(workspaceInvite.getInviteStatus().equals(InviteStatus.Accepted) || workspaceInvite.getInviteStatus().equals(InviteStatus.Rejected)){
-            throw new RuntimeException("You already accepted or rejected the invitation");
+            throw new RuntimeException("You already accepted or rejected this invitation");
         }
 
         User invitedUser = new User();
@@ -226,6 +230,7 @@ public class WorkspaceService {
         workspaceMember.setRole(workspaceInvite.getUserRole());
         workspaceMember.setJoinedAt(LocalDate.now());
         workspaceMemberRepo.save(workspaceMember);
+
     }
 
     public List<WorkspaceResponseDto> fetchUserWorkspace(String userEmail) {
@@ -239,7 +244,7 @@ public class WorkspaceService {
             throw new RuntimeException("Inactive account");
         }
 
-        List<WorkspaceMember> list  = workspaceMemberRepo.findByUser(user);
+        List<WorkspaceMember> list = workspaceMemberRepo.findByUser(user);
         List<WorkspaceResponseDto> responseDtoList = new ArrayList<>();
 
         for(WorkspaceMember workspaceMember : list){
@@ -251,21 +256,48 @@ public class WorkspaceService {
                 responseDtoList.add(responseDto);
             }
         }
-        return responseDtoList;
 
-        //workspaceId
+        return responseDtoList;
+        //workspaceID
         //workspaceName
         //workspaceRole
 
         //isActiveInWorkspace
-
     }
+
+    public List<WorkspaceMemberDto> fetchWorkspaceMembers(UserChannelReqDto reqDto) {
+        User user = userRepository.findByEmail(reqDto.getUserEmail());
+
+        if(user == null){
+            throw new RuntimeException("User not found");
+        }
+
+        if(!user.isActive()){
+            throw new RuntimeException("Inactive account");
+        }
+
+        Optional<Workspace> workspace = workspaceRepo.findById(reqDto.getWorkspaceId());
+
+        if(workspace.isEmpty()){
+            throw new RuntimeException("workspace does not exists");
+        }
+
+        List<WorkspaceMember> workspaceMembers = workspaceMemberRepo.findByWorkspace(workspace.get());
+        List<WorkspaceMemberDto> memberDtos = new ArrayList<>();
+
+        for(WorkspaceMember member : workspaceMembers){
+            WorkspaceMemberDto memberDto = new WorkspaceMemberDto();
+            memberDto.setUserId(member.getUser().getUserId());
+            memberDto.setUserName(member.getUser().getName());
+            memberDto.setActive(member.isActiveInWorkspace());
+            memberDtos.add(memberDto);
+        }
+        return memberDtos;
+    }
+
+
+    // User already exists kar sakta hai app mei
+    // New user will be invited
+    // invite page needed
+    // security needed at the end of project
 }
-
-
-    //user can already exist in the workspace with the inviting email
-    //user already exists kar sakta hai app mein
-    //New user will be invited
-    //Invite page needed
-    //Security needed at the end of project
-

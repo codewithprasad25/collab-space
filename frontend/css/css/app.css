@@ -547,3 +547,128 @@
     font-size: 0.85rem;
     color: var(--text-sub);
 }
+
+
+/* --- Workspace Modal Specific Styles --- */
+
+.form-input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    transition: border 0.2s;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 4px rgba(18, 100, 163, 0.1);
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+}
+
+.btn-primary {
+    background: var(--primary-color);
+    color: white;
+    padding: 0.5rem 1.5rem;
+    border: none;
+    border-radius: var(--radius-md);
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-primary:hover {
+    background: #0a472f;
+}
+
+.btn-primary:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+.add-ws {
+    background: rgba(255, 255, 255, 0.15);
+    font-size: 1.5rem;
+    color: var(--white);
+    transition: all 0.2s;
+}
+
+.add-ws:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.4);
+}
+
+
+/* --- Invite Member Button --- */
+
+.invite-member-btn {
+    width: 90%;
+    margin: 1rem auto;
+    padding: 0.75rem;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.invite-member-btn:hover {
+    background: #0a472f;
+}
+
+
+/* --- Role Selection Styles --- */
+
+.role-group {
+    display: flex;
+    gap: 1rem;
+}
+
+.role-option {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all 0.2s;
+    flex: 1;
+}
+
+.role-option input[type="radio"] {
+    margin-right: 0.5rem;
+    accent-color: var(--primary-color);
+}
+
+.role-option:hover {
+    background-color: #f8f8f8;
+    border-color: #999;
+}
+
+.role-option.selected {
+    border-color: var(--primary-color);
+    background-color: rgba(0, 122, 90, 0.05);
+}
+
+.role-label {
+    font-weight: 700;
+    font-size: 0.95rem;
+}
