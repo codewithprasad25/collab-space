@@ -8,12 +8,19 @@
     <link rel="stylesheet" href="css/css/global.css">
     <link rel="stylesheet" href="css/css/auth.css">
 
-    <script>
-        const user = localStorage.getItem('isLoggedIn');
-        if (user === 'true') {
-            window.location.href = 'index.html';
-        }
-    </script>
+    <!--
+        The page used to redirect immediately if `isLoggedIn` was set in
+        localStorage.  That flag persists until you explicitly clear it (i.e.
+        log out), so every time you reopened `login.html`/`register.html` you
+        were bounced back to `index.html`.
+
+        Redirecting authenticated users can still be done, but it should
+        happen after a proper session check and/or provide a logout link.  For
+        now we remove the inline redirect so you can open these pages when
+        testing.  If you have been redirected unexpectedly, clear
+        `localStorage` (or click the new "Logout" button added to the app) to
+        reset the state.
+    -->
 </head>
 
 <body>

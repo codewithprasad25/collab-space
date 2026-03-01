@@ -171,7 +171,6 @@ public class WorkspaceService {
         workspaceMember.setUser(user);
         workspaceMember.setWorkspace(workspaceInvite.getWorkspace());
         workspaceMemberRepo.save(workspaceMember);
-
     }
 
     public String fetchUserEmail(String invitedToken) {

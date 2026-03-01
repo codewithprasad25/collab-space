@@ -8,12 +8,12 @@
     <link rel="stylesheet" href="css/css/global.css">
     <link rel="stylesheet" href="css/css/auth.css">
 
-    <script>
-        const user = localStorage.getItem('isLoggedIn');
-        if (user === 'true') {
-            window.location.href = 'index.html';
-        }
-    </script>
+    <!--
+        See comment in login.html.  The inline redirect has been removed so that
+        the registration page can be opened even if a previous session flag is
+        still present.  Use the logout functionality on the main app to clear
+        the flag or manually `localStorage.removeItem('isLoggedIn')`.
+    -->
 </head>
 
 <body>

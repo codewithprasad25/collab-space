@@ -16,7 +16,7 @@ const STATIC_MESSAGES = {
             isBot: true
         },
         {
-            sender: 'Ashwani Kumar',
+            sender: 'Prasad Shinde PS',
             avatar: 'A',
             text: 'Hey everyone! Let\'s discuss the new project roadmap.',
             time: '10:15 AM',
@@ -62,25 +62,39 @@ const STATIC_MESSAGES = {
     ]
 };
 
-const stompClient = new StompJs.Client({
-    webSocketFactory: () => {
-        const currentHost = window.location.hostname;
-        const wsUrl = currentHost === '127.0.0.1' || currentHost === '::1' 
-            ? 'http://127.0.0.1:8080/gs-guide-websocket'
-            : `http://${currentHost}:8080/gs-guide-websocket`;
-        console.log('WebSocket URL:', wsUrl);
-        return new SockJS(wsUrl);
-    }
-});
-
-stompClient.onConnect = (frame) => {
-    console.log('Connected: ' + frame);
-    stompClient.subscribe('/topic/message', (greeting) => {
-        let data = greeting.body;
-        console.log('Received message:', data);
+// Initialize STOMP client safely. Failures should not stop UI scripts.
+let stompClient = null;
+try {
+    stompClient = new StompJs.Client({
+        webSocketFactory: () => new SockJS('http://localhost:8080/gs-guide-websocket')
     });
-};
-stompClient.activate();
+
+    stompClient.onConnect = (frame) => {
+        console.log('Connected: ' + frame);
+        try {
+            stompClient.subscribe('/topic/message', (greeting) => {
+                let data = greeting.body;
+                console.log('Received message:', data);
+            });
+        } catch (subErr) {
+            console.error('Subscribe error:', subErr);
+        }
+    };
+
+    stompClient.onStompError = (frame) => {
+        console.error('Broker reported error:', frame);
+    };
+
+    // Attempt activation but don't let it throw to break the page
+    try {
+        stompClient.activate();
+    } catch (actErr) {
+        console.error('stompClient.activate() failed:', actErr);
+    }
+} catch (err) {
+    console.error('Failed to initialize STOMP client:', err);
+    stompClient = null;
+}
 
 
 function initMessaging(feed, textarea, btn, title) {
@@ -177,13 +191,22 @@ function loadChannel(name) {
 }
 
 function sendMessage() {
-    const text = chatTextarea.value.trim();
+    const text = (chatTextarea && chatTextarea.value) ? chatTextarea.value.trim() : '';
     if (!text) return;
 
-    stompClient.publish({
-        destination: "/app/hello",
-        body: JSON.stringify({ 'message': text }),
-    });
+    // Publish if stomp client is available
+    try {
+        if (stompClient && typeof stompClient.publish === 'function') {
+            stompClient.publish({
+                destination: "/app/hello",
+                body: JSON.stringify({ 'message': text }),
+            });
+        } else {
+            console.warn('stompClient not available; skipping publish');
+        }
+    } catch (pubErr) {
+        console.error('Error publishing message:', pubErr);
+    }
 
     const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 

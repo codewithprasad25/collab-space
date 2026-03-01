@@ -16,6 +16,15 @@
         if (isLoggedIn !== "true") {
             window.location.href = "login.html";
         }
+        // simple logout helper: clears all auth flags and returns to sign-in.
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'login.html';
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            const btn = document.getElementById('logoutBtn');
+            if (btn) btn.addEventListener('click', logout);
+        });
     </script>
 
     <link rel="stylesheet" href="css/css/global.css" />
@@ -73,7 +82,7 @@
             </div>
             <ul class="dm-list">
               <li class="channel-item user-status online">
-                <i class="fa-solid fa-circle"></i> Ashwani Kumar
+                <i class="fa-solid fa-circle"></i> Prasad Shinde
                 <span class="you-badge">(you)</span>
                         </li>
                         <li class="channel-item user-status offline">
@@ -86,6 +95,12 @@
                 <button class="invite-member-btn">
           <i class="fa-solid fa-user-plus"></i> Invite Member
         </button>
+
+                <div style="border-top: 1px solid #ccc; padding: 1rem; margin-top: auto;">
+                    <button id="logoutBtn" class="btn-secondary" style="width: 100%;">
+                Logout
+            </button>
+                </div>
         </aside>
 
         <main class="chat-area">
