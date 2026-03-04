@@ -4,5 +4,6 @@ import lombok.Data;
 
 @Data
 public class MessageDto {
+    String channelId;
     String message;
 }

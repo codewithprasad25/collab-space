@@ -203,4 +203,17 @@ public class ChannelService {
         return responseDtos;
     }
 
+    public List<ChannelMember> getChannelMember(Long channelId){
+        Optional<Channel> channel = channelRepo.findById(channelId);
+
+        if(channel.isEmpty()){
+            // channel is null
+            throw new RuntimeException("there is no channel with this id");
+        }
+
+        List<ChannelMember> channelmembers = channelMemberRepo.findByChannel(channel.get());
+
+        return channelmembers;
+    }
+
 }
