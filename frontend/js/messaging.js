@@ -72,7 +72,7 @@ try {
     stompClient.onConnect = (frame) => {
         console.log('Connected: ' + frame);
         try {
-            stompClient.subscribe('/topic/message', (greeting) => {
+            stompClient.subscribe('user/topic/messages', (greeting) => {
                 let data = greeting.body;
                 console.log('Received message:', data);
             });

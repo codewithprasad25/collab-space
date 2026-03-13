@@ -1,5 +1,6 @@
 package com.example.collab_space.controller;
 
+import com.example.collab_space.config.JwtUtil;
 import com.example.collab_space.requestDto.OtpVerificationDto;
 import com.example.collab_space.requestDto.UserLoginDto;
 import com.example.collab_space.requestDto.UserRegistrationDto;
@@ -19,6 +20,9 @@ public class UserController {
 
     @Autowired
     OtpService otpService;
+
+    @Autowired
+    JwtUtil jwtUtil;
 
     @PostMapping("/registration")
     public ResponseEntity userRegistration(@RequestBody UserRegistrationDto registrationDto){
@@ -44,10 +48,12 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity userLogin(@RequestBody UserLoginDto loginDto){
+    public ResponseEntity<?> userLogin(@RequestBody UserLoginDto loginDto){
         try {
             if (userService.LoginWithEmailAndPass(loginDto)){
-                return new ResponseEntity<>("Login successful", HttpStatus.OK);
+                //JWT token generate karna haii and have to return to user
+                String token = jwtUtil.generateToken(loginDto.getEmail());
+                return new ResponseEntity<>(token, HttpStatus.OK);
             }
 
         } catch (RuntimeException e){

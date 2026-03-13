@@ -51,4 +51,10 @@ public class ChannelController {
             return new ResponseEntity(e.getMessage(),HttpStatus.BAD_REQUEST);
         }
     }
+
+    @GetMapping("/testing")
+    public String testing(){
+        return "testing";
+    }
+
 }

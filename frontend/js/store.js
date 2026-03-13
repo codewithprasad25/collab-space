@@ -3,6 +3,7 @@
 const DEFAULT_DATA = {
     activeWorkspace: null,
     activeChannel: 'general',
+    activeChannelId: null,
     workspaces: {}
 };
 
@@ -58,9 +59,10 @@ const Store = {
         Store.save(data);
     },
 
-    setActiveChannel: (name) => {
+    setActiveChannel: (name, id) => {
         const data = Store.get();
         data.activeChannel = name;
+        data.activeChannelId = id;
         Store.save(data);
     },
 

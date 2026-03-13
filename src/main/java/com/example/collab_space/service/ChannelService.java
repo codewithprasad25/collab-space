@@ -207,13 +207,12 @@ public class ChannelService {
         Optional<Channel> channel = channelRepo.findById(channelId);
 
         if(channel.isEmpty()){
-            // channel is null
-            throw new RuntimeException("there is no channel with this id");
+            throw new RuntimeException("channel not found");
         }
 
-        List<ChannelMember> channelmembers = channelMemberRepo.findByChannel(channel.get());
+        List<ChannelMember> channelMembers = channelMemberRepo.findByChannel(channel.get());
 
-        return channelmembers;
+        return channelMembers;
     }
 
 }

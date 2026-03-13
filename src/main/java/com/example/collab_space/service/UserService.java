@@ -82,7 +82,7 @@ public class UserService {
         }
 
         // success → return silently
-        return false;
+        return true;
     }
 
 
