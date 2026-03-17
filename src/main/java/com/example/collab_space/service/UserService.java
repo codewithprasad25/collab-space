@@ -1,5 +1,8 @@
 package com.example.collab_space.service;
 
+import com.example.collab_space.exception.UserAlreadyExist;
+import com.example.collab_space.exception.UserNotFound;
+import com.example.collab_space.exception.UserNotVerified;
 import com.example.collab_space.model.Otp;
 import com.example.collab_space.model.User;
 import com.example.collab_space.repository.OtpRepository;
@@ -29,7 +32,7 @@ public class UserService {
         User user1 = userRepository.findByEmail(registrationDto.getEmail());
 
         if(user1 != null && user1.isActive()){ //if user is preasent and is active so then throw runtime exception;
-            throw new RuntimeException("User With this email already exists");
+            throw new UserAlreadyExist("User With this email already exists");
         }
 
         Otp otp = null;
@@ -56,29 +59,29 @@ public class UserService {
     public boolean LoginWithEmailAndPass(UserLoginDto loginDto){
 
         if(loginDto == null){
-            throw new RuntimeException("Login data missing");
+            throw new UserNotFound("Login data missing");
         }
 
         if(loginDto.getEmail() == null || loginDto.getEmail().trim().isEmpty()){
-            throw new RuntimeException("credentials are required");
+            throw new UserNotFound("credentials are required");
         }
 
         if(loginDto.getPassword() == null || loginDto.getPassword().trim().isEmpty()){
-            throw new RuntimeException("credentials are required");
+            throw new UserNotFound("credentials are required");
         }
 
         User user = userRepository.findByEmail(loginDto.getEmail());
 
         if(user == null){
-            throw new RuntimeException("User not found");
+            throw new UserNotFound("User not found");
         }
 
         if(!user.getPassword().equals(loginDto.getPassword())){
-            throw new RuntimeException("Invalid Credentials");
+            throw new UserNotFound("Invalid Credentials");
         }
 
         if(!user.isActive()){
-            throw new RuntimeException("User not verified, please register yourself again");
+            throw new UserNotVerified("User not verified, please register yourself again");
         }
 
         // success → return silently
@@ -90,11 +93,11 @@ public class UserService {
         User user = userRepository.findByEmail(email);
 
         if(user == null){
-            throw new RuntimeException("User not found");
+            throw new UserNotFound("User not found");
         }
 
         if(!user.isActive()){
-            throw new RuntimeException("User not verified, please register yourself again");
+            throw new UserNotVerified("User not verified, please register yourself again");
         }
         Otp otp = otpService.renewOtp(user);
         mailService.sendOtp(email,otp.getOtp());

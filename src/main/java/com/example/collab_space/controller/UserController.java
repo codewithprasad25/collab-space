@@ -26,51 +26,33 @@ public class UserController {
 
     @PostMapping("/registration")
     public ResponseEntity userRegistration(@RequestBody UserRegistrationDto registrationDto){
-        try {
             userService.userRegistration(registrationDto);
             return new ResponseEntity<>("registration successful",HttpStatus.OK);
-        }catch(RuntimeException e){
-            return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
-        }
     }
 
     @PutMapping("/otp/verify")
     public ResponseEntity<String> otpVerification(@RequestBody OtpVerificationDto verificationDto) {
-        try {
             if (otpService.verify(verificationDto)) {
                 return new ResponseEntity<>("Otp is Verified", HttpStatus.OK);
             } else {
                 return new ResponseEntity<>("Invalid Otp",HttpStatus.BAD_REQUEST);
             }
-        }catch(RuntimeException e){
-            return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_ACCEPTABLE);
-        }
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> userLogin(@RequestBody UserLoginDto loginDto){
-        try {
-            if (userService.LoginWithEmailAndPass(loginDto)){
+            userService.LoginWithEmailAndPass(loginDto);
                 //JWT token generate karna haii and have to return to user
                 String token = jwtUtil.generateToken(loginDto.getEmail());
                 return new ResponseEntity<>(token, HttpStatus.OK);
             }
 
-        } catch (RuntimeException e){
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
-        return null;
-    }
 
     @PostMapping("/login/{email}")
     public ResponseEntity userLoginWithOtp(@PathVariable String email){
-        try{
-            userService.LoginWithOtp(email);
-            return new ResponseEntity<>("Otp is send to your email",HttpStatus.OK);
-        }catch (RuntimeException e){
-            return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
+        userService.LoginWithOtp(email);
+        return new ResponseEntity<>("Otp is send to your email",HttpStatus.OK);
         }
 
     }
 
-}
